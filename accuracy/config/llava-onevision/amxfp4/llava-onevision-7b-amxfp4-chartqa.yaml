@@ -1,0 +1,42 @@
+seed: 5000
+model:
+  model_type: llava-hf/llava-onevision-qwen2-7b-ov-hf
+save:
+  run_dir: save/llava-onevision-7b-amxfp4-chartqa/
+  logger: inference.log
+eval:
+  benchmarks:
+  - chartqa
+quantization:
+  vision:
+    wbit: 4
+    abit: 4
+    wqtype: amxfp4_quant
+    xqtype: amxfp4_quant
+    w_block_size: 32
+    a_block_size: 32
+    quantize_bmm_input: true
+    bmm_qtype: amxfp4
+    bmm_block_size: 32
+  projector:
+    wbit: 4
+    abit: 4
+    wqtype: amxfp4_quant
+    xqtype: amxfp4_quant
+    w_block_size: 32
+    a_block_size: 32
+  llm:
+    wbit: 4
+    abit: 4
+    wqtype: amxfp4_quant
+    xqtype: amxfp4_quant
+    w_block_size: 32
+    a_block_size: 32
+    quantize_bmm_input: true
+    bmm_qtype: amxfp4
+    bmm_block_size: 32
+    num_samples: 128
+    rescale_out: false
+smooth:
+  alpha: 0.85
+  flag: false

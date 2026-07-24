@@ -1,0 +1,60 @@
+seed: 5000
+model:
+  model_type: openbmb/MiniCPM-V-2_6
+save:
+  run_dir: save/minicpm-v-mix-4.5b-fp4-mmmu/
+  logger: inference.log
+eval:
+  benchmarks:
+  - mmmu
+quantization:
+  vision:
+    wbit: 4
+    abit: 3
+    wqtype: mxfp4_ceil_quant
+    xqtype: inverted_mxint_quant
+    w_block_size: 16
+    a_block_size: 32
+    a_ebit: 3
+    mantissa_group_size: 8
+    quantize_bmm_input: true
+    bmm_qtype: mixed_invmx_mxfp4_ceil
+    bmm_bits: 4
+    bmm_ebit: 3
+    bmm_q_bits: 3
+    bmm_q_ebit: 3
+    bmm_kv_bits: 4
+    bmm_q_block_size: 32
+    bmm_kv_block_size: 16
+  projector:
+    wbit: 4
+    abit: 3
+    wqtype: mxfp4_ceil_quant
+    xqtype: inverted_mxint_quant
+    w_block_size: 16
+    a_block_size: 32
+    a_ebit: 3
+    mantissa_group_size: 8
+  llm:
+    wbit: 4
+    abit: 3
+    wqtype: mxfp4_ceil_quant
+    xqtype: inverted_mxint_quant
+    w_block_size: 16
+    a_block_size: 32
+    mantissa_group_size: 8
+    quantize_bmm_input: true
+    bmm_qtype: mixed_invmx_mxfp4_ceil
+    bmm_bits: 4
+    bmm_ebit: 3
+    bmm_q_bits: 3
+    bmm_kv_bits: 4
+    num_samples: 128
+    rescale_out: false
+    a_ebit: 3
+    bmm_q_ebit: 3
+    bmm_kv_block_size: 16
+    bmm_q_block_size: 32
+smooth:
+  alpha: 0.85
+  flag: false

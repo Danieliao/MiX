@@ -1,0 +1,40 @@
+seed: 5000
+
+model:
+  model_type: "meta-llama/Llama-3.1-8B"
+
+dataset:
+  name: "c4"
+  split: "validation"
+
+save:
+  run_dir: "save/llm/llama3.1-8b-fp16-c4/"
+  logger: "inference.log"
+
+eval:
+  seq_len: 2048
+  num_segments: 256
+
+quantization:
+  wbit: 16
+  abit: 16
+  wqtype: identity
+  xqtype: identity
+  num_samples: 2048
+  rescale_out: False
+
+train:
+  batch_size: 2048
+
+smooth:
+  alpha: 0.85
+  flag: False
+
+t2c:
+  swl: 32
+  sfl: 26
+  save_model: False
+  save_tensors: False
+
+export:
+  export_samples: 0

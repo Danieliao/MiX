@@ -1,0 +1,42 @@
+seed: 5000
+model:
+  model_type: Qwen/Qwen2-VL-7B-Instruct
+save:
+  run_dir: save/qwen2-vl-7b-mxfp4g16-ocrbench/
+  logger: inference.log
+eval:
+  benchmarks:
+  - ocrbench
+quantization:
+  vision:
+    wbit: 4
+    abit: 4
+    wqtype: mxfp4_ceil_quant
+    xqtype: mxfp4_ceil_quant
+    w_block_size: 16
+    a_block_size: 16
+    quantize_bmm_input: true
+    bmm_qtype: mxfp4_ceil
+    bmm_block_size: 16
+  projector:
+    wbit: 4
+    abit: 4
+    wqtype: mxfp4_ceil_quant
+    xqtype: mxfp4_ceil_quant
+    w_block_size: 16
+    a_block_size: 16
+  llm:
+    wbit: 4
+    abit: 4
+    wqtype: mxfp4_ceil_quant
+    xqtype: mxfp4_ceil_quant
+    w_block_size: 16
+    a_block_size: 16
+    quantize_bmm_input: true
+    bmm_qtype: mxfp4_ceil
+    bmm_block_size: 16
+    num_samples: 128
+    rescale_out: false
+smooth:
+  alpha: 0.85
+  flag: false

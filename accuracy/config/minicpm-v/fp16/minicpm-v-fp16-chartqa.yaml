@@ -1,0 +1,29 @@
+seed: 5000
+model:
+  model_type: openbmb/MiniCPM-V-2_6
+save:
+  run_dir: save/minicpm-v-fp16-chartqa/
+  logger: inference.log
+eval:
+  benchmarks:
+  - chartqa
+quantization:
+  vision:
+    wbit: 16
+    abit: 16
+    wqtype: identity
+    xqtype: identity
+  projector:
+    wbit: 16
+    abit: 16
+    wqtype: identity
+    xqtype: identity
+  llm:
+    wbit: 16
+    abit: 16
+    wqtype: identity
+    xqtype: identity
+    num_samples: 16
+smooth:
+  alpha: 0.85
+  flag: false

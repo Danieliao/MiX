@@ -1,0 +1,47 @@
+seed: 5000
+model:
+  model_type: llava-hf/llava-onevision-qwen2-7b-ov-hf
+save:
+  run_dir: save/llava-onevision-7b-mxint4g16-chartqa/
+  logger: inference.log
+eval:
+  benchmarks:
+  - chartqa
+quantization:
+  vision:
+    wbit: 4
+    abit: 4
+    wqtype: mxint_quant
+    xqtype: mxint_quant
+    w_block_size: 16
+    a_block_size: 16
+    shared_exp_bits: 8
+    quantize_bmm_input: true
+    bmm_qtype: mxint
+    bmm_bits: 4
+    bmm_block_size: 16
+  projector:
+    wbit: 4
+    abit: 4
+    wqtype: mxint_quant
+    xqtype: mxint_quant
+    w_block_size: 16
+    a_block_size: 16
+    shared_exp_bits: 8
+  llm:
+    wbit: 4
+    abit: 4
+    wqtype: mxint_quant
+    xqtype: mxint_quant
+    w_block_size: 16
+    a_block_size: 16
+    shared_exp_bits: 8
+    quantize_bmm_input: true
+    bmm_qtype: mxint
+    bmm_bits: 4
+    bmm_block_size: 16
+    num_samples: 128
+    rescale_out: false
+smooth:
+  alpha: 0.85
+  flag: false

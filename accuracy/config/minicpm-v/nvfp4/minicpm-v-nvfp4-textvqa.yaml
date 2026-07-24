@@ -1,0 +1,42 @@
+seed: 5000
+model:
+  model_type: openbmb/MiniCPM-V-2_6
+save:
+  run_dir: save/minicpm-v-nvfp4-textvqa/
+  logger: inference.log
+eval:
+  benchmarks:
+  - textvqa
+quantization:
+  vision:
+    wbit: 4
+    abit: 4
+    wqtype: nvfp4_quant
+    xqtype: nvfp4_quant
+    w_block_size: 16
+    a_block_size: 16
+    quantize_bmm_input: true
+    bmm_qtype: nvfp4
+    bmm_block_size: 16
+  projector:
+    wbit: 4
+    abit: 4
+    wqtype: nvfp4_quant
+    xqtype: nvfp4_quant
+    w_block_size: 16
+    a_block_size: 16
+  llm:
+    wbit: 4
+    abit: 4
+    wqtype: nvfp4_quant
+    xqtype: nvfp4_quant
+    w_block_size: 16
+    a_block_size: 16
+    quantize_bmm_input: true
+    bmm_qtype: nvfp4
+    bmm_block_size: 16
+    num_samples: 128
+    rescale_out: false
+smooth:
+  alpha: 0.85
+  flag: false

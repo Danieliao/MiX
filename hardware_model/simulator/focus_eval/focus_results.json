@@ -1,0 +1,43 @@
+{
+  "llava": {
+    "ChartQA": {
+      "speedup": 4.5976807180878945
+    },
+    "TextVQA": {
+      "speedup": 4.504573070306763
+    },
+    "VizWiz": {
+      "speedup": 4.559091706099278
+    },
+    "OCRBench": {
+      "speedup": 3.7019172612708258
+    },
+    "MMMU": {
+      "speedup": 4.000996559299626
+    },
+    "SEED-2+": {
+      "speedup": 4.63116131751057
+    }
+  },
+  "minicpm_v": {
+    "ChartQA": {
+      "speedup": 1.4563651558310557
+    },
+    "TextVQA": {
+      "speedup": 2.4192800851296177
+    },
+    "VizWiz": {
+      "speedup": 2.9611960020290553
+    },
+    "OCRBench": {
+      "speedup": 1.460360755623922
+    },
+    "MMMU": {
+      "speedup": 1.4590722612707283
+    },
+    "SEED-2+": {
+      "speedup": 2.412735614176664
+    }
+  },
+  "_comment": "Per-(model, task) Focus speedup vs FP16 dense systolic. Focus runs on a dense FP16 32x32 systolic array @ 500MHz, so energy is auto-derived as mix_simulator_FP16_energy / speedup for apples-to-apples comparison with the mix_simulator baseline. Real Focus simulator energy CSVs are kept in simulator/Focus/simulator/results/main_*.csv if you want raw mJ."
+}

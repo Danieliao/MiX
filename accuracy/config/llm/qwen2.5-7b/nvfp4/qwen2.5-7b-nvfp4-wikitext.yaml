@@ -1,0 +1,47 @@
+seed: 5000
+
+model:
+  model_type: "Qwen/Qwen2.5-7B"
+
+dataset:
+  name: "wikitext"
+  path: "wikitext-2-raw-v1"
+  split: "test"
+
+save:
+  run_dir: "save/llm/qwen2.5-7b-nvfp4-wikitext/"
+  logger: "inference.log"
+
+eval:
+  seq_len: 2048
+  stride: 2036
+
+quantization:
+  # Weight & activation: NVFP4 (E2M1 + E4M3 block scale, g16)
+  wbit: 4
+  abit: 4
+  wqtype: nvfp4_quant
+  xqtype: nvfp4_quant
+  w_block_size: 16
+  a_block_size: 16
+  quantize_bmm_input: True
+  bmm_qtype: "nvfp4"
+  bmm_block_size: 16
+  num_samples: 2048
+  rescale_out: False
+
+train:
+  batch_size: 2048
+
+smooth:
+  alpha: 0.85
+  flag: False
+
+t2c:
+  swl: 32
+  sfl: 26
+  save_model: False
+  save_tensors: False
+
+export:
+  export_samples: 0

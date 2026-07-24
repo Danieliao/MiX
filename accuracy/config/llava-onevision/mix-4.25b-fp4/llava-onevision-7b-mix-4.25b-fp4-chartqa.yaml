@@ -1,0 +1,58 @@
+seed: 5000
+model:
+  model_type: llava-hf/llava-onevision-qwen2-7b-ov-hf
+save:
+  run_dir: save/llava-onevision-7b-mix-4.25b-fp4-chartqa/
+  logger: inference.log
+eval:
+  benchmarks:
+  - chartqa
+quantization:
+  vision:
+    wbit: 4
+    abit: 3
+    wqtype: mxfp4_ceil_quant
+    xqtype: inverted_mxint_quant
+    w_block_size: 32
+    a_block_size: 32
+    a_ebit: 3
+    mantissa_group_size: 32
+    quantize_bmm_input: true
+    bmm_qtype: mixed_invmx_mxfp4_ceil
+    bmm_bits: 4
+    bmm_ebit: 3
+    bmm_q_bits: 3
+    bmm_q_ebit: 3
+    bmm_kv_bits: 4
+    bmm_block_size: 32
+  projector:
+    wbit: 4
+    abit: 3
+    wqtype: mxfp4_ceil_quant
+    xqtype: inverted_mxint_quant
+    w_block_size: 32
+    a_block_size: 32
+    a_ebit: 3
+    mantissa_group_size: 32
+  llm:
+    wbit: 4
+    abit: 3
+    wqtype: mxfp4_ceil_quant
+    xqtype: inverted_mxint_quant
+    w_block_size: 32
+    a_block_size: 32
+    mantissa_group_size: 32
+    quantize_bmm_input: true
+    bmm_qtype: mixed_invmx_mxfp4_ceil
+    bmm_bits: 4
+    bmm_ebit: 3
+    bmm_q_bits: 3
+    bmm_kv_bits: 4
+    bmm_block_size: 32
+    num_samples: 128
+    rescale_out: false
+    a_ebit: 3
+    bmm_q_ebit: 3
+smooth:
+  alpha: 0.85
+  flag: false

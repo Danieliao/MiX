@@ -1,0 +1,27 @@
+results_28nm_iso512.reproduced.csv
+
+# Synthesis (Design Compiler) outputs and scratch
+syn/*/output/
+syn/*/log/
+syn/*/alib-*/
+syn/*/command.log
+syn/*/filenames.log
+syn/*/*.log
+syn/*/default.svf
+syn/*/*.pvl
+syn/*/*.syn
+syn/*/*.mr
+
+# SAIF power flow outputs
+power_saif/*/*.saif
+power_saif/*/*.rpt
+power_saif/*/*.log
+power_saif/power_summary.txt
+
+# Simulation (VCS) outputs
+simv
+simv.daidir/
+csrc/
+*.vpd
+ucli.key
+DVEfiles/

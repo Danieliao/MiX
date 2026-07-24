@@ -1,0 +1,40 @@
+seed: 5000
+
+model:
+  model_type: "mistralai/Mistral-7B-v0.3"
+
+dataset:
+  name: "winogrande"
+  split: "validation"
+
+save:
+  run_dir: "save/llm/mistral-7b-v0.3-fp16-winogrande/"
+  logger: "inference.log"
+
+eval:
+  max_samples: -1
+  dryrun: False
+
+quantization:
+  wbit: 16
+  abit: 16
+  wqtype: identity
+  xqtype: identity
+  num_samples: 2048
+  rescale_out: False
+
+train:
+  batch_size: 2048
+
+smooth:
+  alpha: 0.85
+  flag: False
+
+t2c:
+  swl: 32
+  sfl: 26
+  save_model: False
+  save_tensors: False
+
+export:
+  export_samples: 0

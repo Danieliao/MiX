@@ -1,0 +1,29 @@
+seed: 5000
+model:
+  model_type: llava-hf/llava-onevision-qwen2-7b-ov-hf
+save:
+  run_dir: save/llava-onevision-7b-fp16-ocrbench/
+  logger: inference.log
+eval:
+  benchmarks:
+  - ocrbench
+quantization:
+  vision:
+    wbit: 16
+    abit: 16
+    wqtype: identity
+    xqtype: identity
+  projector:
+    wbit: 16
+    abit: 16
+    wqtype: identity
+    xqtype: identity
+  llm:
+    wbit: 16
+    abit: 16
+    wqtype: identity
+    xqtype: identity
+    num_samples: 16
+smooth:
+  alpha: 0.85
+  flag: false

@@ -1,0 +1,43 @@
+seed: 5000
+model:
+  model_type: openbmb/MiniCPM-V-2_6
+save:
+  run_dir: save/k-smooth-static/minicpm-v/mxfp4g16/minicpm-v-mxfp4g16-seedbench2plus/
+  logger: inference.log
+eval:
+  benchmarks:
+  - seedbench2plus
+quantization:
+  vision:
+    wbit: 4
+    abit: 4
+    wqtype: mxfp4_quant
+    xqtype: mxfp4_quant
+    w_block_size: 16
+    a_block_size: 16
+    quantize_bmm_input: true
+    bmm_qtype: mxfp4
+    bmm_block_size: 16
+  projector:
+    wbit: 4
+    abit: 4
+    wqtype: mxfp4_quant
+    xqtype: mxfp4_quant
+    w_block_size: 16
+    a_block_size: 16
+  llm:
+    k_smooth_static: true   # freeze prefill K-mean (hardware-efficient K-smoothing)
+    wbit: 4
+    abit: 4
+    wqtype: mxfp4_quant
+    xqtype: mxfp4_quant
+    w_block_size: 16
+    a_block_size: 16
+    quantize_bmm_input: true
+    bmm_qtype: mxfp4
+    bmm_block_size: 16
+    num_samples: 128
+    rescale_out: false
+smooth:
+  alpha: 0.85
+  flag: false

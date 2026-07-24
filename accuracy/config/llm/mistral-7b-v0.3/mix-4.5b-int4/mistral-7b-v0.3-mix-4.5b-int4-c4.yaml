@@ -1,0 +1,57 @@
+seed: 5000
+
+model:
+  model_type: "mistralai/Mistral-7B-v0.3"
+
+dataset:
+  name: "c4"
+  split: "validation"
+
+save:
+  run_dir: "save/llm/mistral-7b-v0.3-mix-4.5b-int4-c4/"
+  logger: "inference.log"
+
+eval:
+  seq_len: 2048
+  num_segments: 256
+
+quantization:
+  # Weight: MXINT4 (g16)
+  wbit: 4
+  wqtype: mxint_quant
+  w_block_size: 16
+  shared_exp_bits: 8
+  # Activation: INVMX (3b mantissa + 3b ebit, g32, mantissa group 8)
+  abit: 3
+  xqtype: inverted_mxint_quant
+  a_block_size: 32
+  a_ebit: 3
+  mantissa_group_size: 8
+  # BMM (attention) -- Q=INVMX, K/V=MXINT4
+  quantize_bmm_input: True
+  bmm_qtype: "mixed_invmx_mxint"
+  bmm_bits: 4
+  bmm_ebit: 3
+  bmm_q_bits: 3
+  bmm_q_ebit: 3
+  bmm_kv_bits: 4
+  bmm_q_block_size: 32
+  bmm_kv_block_size: 16
+  num_samples: 2048
+  rescale_out: False
+
+train:
+  batch_size: 2048
+
+smooth:
+  alpha: 0.85
+  flag: False
+
+t2c:
+  swl: 32
+  sfl: 26
+  save_model: False
+  save_tensors: False
+
+export:
+  export_samples: 0

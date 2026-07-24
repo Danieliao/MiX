@@ -1,0 +1,43 @@
+Design name  <->  RTL directory / top-level module
+================================================================================
+
+Every design is normalized to 512 MAC/cycle so that area and power are directly
+comparable (see README.md). The "Design" column below is exactly the Design
+column of results_28nm_iso512.csv.
+
+Design          RTL directory                          Top-level module
+--------------  -------------------------------------  ------------------------------
+INT4            src/systolic_arrays/INT4               INT4_SystolicArray
+INT8            src/systolic_arrays/INT8               INT8_SystolicArray
+MXINT4          src/systolic_arrays/MXINT4             MXINT4_SystolicArray
+MXINT4_g16      src/systolic_arrays/MXINT4_g16         MXINT4_g16_SystolicArray
+MXFP4           src/systolic_arrays/MXFP4              MXFP4_SystolicArray
+MXFP4_g16       src/systolic_arrays/MXFP4_g16          MXFP4_g16_SystolicArray
+NVFP4           src/systolic_arrays/NVFP4              NVFP4_SystolicArray
+AMXFP4          src/systolic_arrays/AMXFP4             AMXFP4_SystolicArray
+MXFP4_PLUS      src/systolic_arrays/MXFP4_PLUS         MXFP4_PLUS_SystolicArray
+MiX425b_MXINT4  src/systolic_arrays/MiX425b_MXINT4     MiX425b_MXINT4_SystolicArray
+MiX425b_MXFP4   src/systolic_arrays/MiX425b_MXFP4      MiX425b_MXFP4_SystolicArray
+MiX45b_MXINT4   src/systolic_arrays/MiX45b_MXINT4      MiX45b_MXINT4_SystolicArray
+MiX45b_MXFP4    src/systolic_arrays/MiX45b_MXFP4       MiX45b_MXFP4_SystolicArray
+MiX45b_MXINT5   src/systolic_arrays/MiX45b_MXINT5      MiX45b_MXINT5_SystolicArray
+FP16            src/systolic_arrays/FP16               FP16_SystolicArray
+
+Supporting blocks (not rows of results_28nm_iso512.csv):
+
+  quantizer     src/quantizer                          MiX_MX_Quantizer
+  k_smoother    src/k_smoother                         K_SMOOTH_ARRAY
+
+Each design has a matching synthesis directory syn/<Design>/ and (optionally) a
+SAIF power directory power_saif/<Design>/.
+
+Notes
+-----
+* INT8, MXINT4_g16, MXFP4_g16 and NVFP4 are the block-32-PE variants used in the
+  paper: the scale block size stays 16 (so the bit-width is unchanged) while one
+  PE consumes two 16-element sub-blocks. This makes every design iso-PE-size at
+  32 elements/PE, which is what makes the area/power comparison fair.
+* MiX45b_MXINT4 and MiX45b_MXINT5 use the fused normalize+accumulate backend,
+  matching the other MX-family designs (see README.md, "Fairness").
+* FP16 is a dense 1-MAC/PE baseline, so it uses a 16x32 mesh to reach 512
+  MAC/cycle; its CSV row is the 32x32 synthesis result divided by 2.

@@ -1,0 +1,29 @@
+seed: 5000
+model:
+  model_type: Qwen/Qwen2.5-VL-72B-Instruct
+save:
+  run_dir: save/qwen2.5-vl-72b-fp16-seedbench2plus/
+  logger: inference.log
+eval:
+  benchmarks:
+  - seedbench2plus
+quantization:
+  vision:
+    wbit: 16
+    abit: 16
+    wqtype: identity
+    xqtype: identity
+  projector:
+    wbit: 16
+    abit: 16
+    wqtype: identity
+    xqtype: identity
+  llm:
+    wbit: 16
+    abit: 16
+    wqtype: identity
+    xqtype: identity
+    num_samples: 16
+smooth:
+  alpha: 0.85
+  flag: false

@@ -1,0 +1,46 @@
+seed: 5000
+
+model:
+  model_type: "meta-llama/Llama-3.1-8B"
+
+dataset:
+  name: "ARC-Challenge"
+  split: "test"
+
+save:
+  run_dir: "save/llm/llama3.1-8b-nvfp4-arc-challenge/"
+  logger: "inference.log"
+
+eval:
+  max_samples: -1
+  dryrun: False
+
+quantization:
+  # Weight & activation: NVFP4 (E2M1 + E4M3 block scale, g16)
+  wbit: 4
+  abit: 4
+  wqtype: nvfp4_quant
+  xqtype: nvfp4_quant
+  w_block_size: 16
+  a_block_size: 16
+  quantize_bmm_input: True
+  bmm_qtype: "nvfp4"
+  bmm_block_size: 16
+  num_samples: 2048
+  rescale_out: False
+
+train:
+  batch_size: 2048
+
+smooth:
+  alpha: 0.85
+  flag: False
+
+t2c:
+  swl: 32
+  sfl: 26
+  save_model: False
+  save_tensors: False
+
+export:
+  export_samples: 0
