@@ -68,6 +68,12 @@ FORMATS = [
 MODELS = ['qwen2vl', 'minicpm-v', 'llava-onevision']
 
 
+# Results whose evaluator dropped samples after a CUDA OOM. Those samples never
+# enter `total`, so the score below is renormalized over a subset and is not
+# comparable to the paper. Collected here and reported at the end of the run.
+PARTIAL = []
+
+
 def load_accuracy(model, fmt_dir, bench):
     """Load and compute accuracy percentage for a single result."""
     path = f'accuracy_result/{model}/{fmt_dir}/{bench}.json'
@@ -76,6 +82,10 @@ def load_accuracy(model, fmt_dir, bench):
 
     with open(path) as f:
         d = json.load(f)
+
+    skipped = d.get('skipped_oom', 0)
+    if skipped:
+        PARTIAL.append((path, skipped, d.get('total', 0)))
 
     if bench == 'ocrbench':
         # OCRBench: total_score out of total (typically 1000)
@@ -114,6 +124,15 @@ def main():
                 entry['avg'] = None
 
             result[model][fmt_dir] = entry
+
+    if PARTIAL:
+        print('\n*** WARNING: results with OOM-skipped samples ***')
+        for path, skipped, total in PARTIAL:
+            print(f'  {path}: {skipped} skipped, only {total} of '
+                  f'{skipped + total} samples scored')
+        print('  These cells are renormalized over a subset and are NOT '
+              'comparable to the paper.\n  Rerun them on a GPU with more '
+              'memory (see dependency.md).')
 
     # Save
     out_path = 'accuracy_result/table2.json'

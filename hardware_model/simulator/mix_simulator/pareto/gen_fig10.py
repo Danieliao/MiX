@@ -3,7 +3,7 @@
 
 Standalone, self-contained generator (supersedes pareto_efficiency_plot.py):
   X = composite PE efficiency = TOPs/mm^2 * TOPs/W   (joint area+power; higher better)
-  Y = average task accuracy over MiniCPM-V-2.6 and LLaVA-OneVision-7B (higher better)
+  Y = average task accuracy over Qwen2-VL-7B and LLaVA-OneVision-7B (higher better)
 
 Inputs:
   - simulator/mix_simulator/results_28nm_iso512_saif.csv  (iso-512 SAIF area/power)
@@ -34,22 +34,33 @@ T2_PATH = os.path.join(ROOT, "accuracy_result", "table2.json")
 OUT_DIR = os.path.join(HERE, "output")
 
 # (csv_name, table2_key, label, is_mix, color)
+#   csv_name   -> "Design" column of results_28nm_iso512_saif.csv
+#   table2_key -> format directory key in accuracy_result/table2.json, i.e. the
+#                 first column of FORMATS in accuracy/accuracy_result/
+#                 generate_table2_json.py. Keep the two in sync: a key that is
+#                 not in table2.json used to be dropped silently, which removed
+#                 every MiX point from the figure.
 #   table2_key None -> INT8 uses FP16 (lossless) accuracy.
 FORMATS = [
-    ("INT8",           None,                           "INT8",             False, "#606060"),
-    ("AMXFP4",         "amxfp4",                       "AMXFP4",           False, "#8c564b"),
-    ("NVFP4",          "nvfp4",                        "NVFP4",            False, "#aa72fe"),
-    ("MXFP4_PLUS",     "mxfp4plus",                    "MXFP4+",           False, "#6aa84f"),
-    ("MXFP4_g16",      "mxfp4ceilg16",                 r"MXFP4$_{g16}$",   False, "#A61A57"),
-    ("MiX45b_MXFP4",   "mxfp4ceilg16-mix4.5b-l-flip",  r"MiX-FP4$_{g16}$", True,  "#EA5193"),
-    ("MXINT4_g16",     "mxint4g16",                    r"MXINT4$_{g16}$",  False, "#B5A4D4"),
-    ("MiX45b_MXINT4",  "mxint4g16-mix4.5b-l-flip",     r"MiX-INT4$_{g16}$",True,  "#9467bd"),
-    ("MiX45b_MXINT5",  "mxint5-mix4.5b-l-flip",        r"MiX-INT5$_{g16}$",True,  "#6A3D9A"),
-    ("MXFP4",          "mxfp4ceil",                    "MXFP4",            False, "#4D8941"),
-    ("MiX425b_MXFP4",  "mxfp4ceil-mix4.25b-l-flip",    "MiX-FP4",          True,  "#6DEC53"),
-    ("MXINT4",         "mxint4",                       "MXINT4",           False, "#C96B19"),
-    ("MiX425b_MXINT4", "mxint4-mix4.25b-l-flip",       "MiX-INT4",         True,  "#FFA85B"),
+    ("INT8",           None,                "INT8",             False, "#606060"),
+    ("AMXFP4",         "amxfp4",            "AMXFP4",           False, "#8c564b"),
+    ("NVFP4",          "nvfp4",             "NVFP4",            False, "#aa72fe"),
+    ("MXFP4_PLUS",     "mxfp4plus",         "MXFP4+",           False, "#6aa84f"),
+    ("MXFP4_g16",      "mxfp4g16",          r"MXFP4$_{g16}$",   False, "#A61A57"),
+    ("MiX45b_MXFP4",   "mix-4.5b-fp4",      r"MiX-FP4$_{g16}$", True,  "#EA5193"),
+    ("MXINT4_g16",     "mxint4g16",         r"MXINT4$_{g16}$",  False, "#B5A4D4"),
+    ("MiX45b_MXINT4",  "mix-4.5b-int4",     r"MiX-INT4$_{g16}$",True,  "#9467bd"),
+    ("MiX45b_MXINT5",  "mix-4.5b-int5",     r"MiX-INT5$_{g16}$",True,  "#6A3D9A"),
+    ("MXFP4",          "mxfp4",             "MXFP4",            False, "#4D8941"),
+    ("MiX425b_MXFP4",  "mix-4.25b-fp4",     "MiX-FP4",          True,  "#6DEC53"),
+    ("MXINT4",         "mxint4",            "MXINT4",           False, "#C96B19"),
+    ("MiX425b_MXINT4", "mix-4.25b-int4",    "MiX-INT4",         True,  "#FFA85B"),
 ]
+
+# Models averaged on the Y axis (paper Section "The PPA-Accuracy Pareto
+# Frontier": "the average accuracy across six VLM benchmarks and two models
+# (Qwen2-VL-7B and LLaVA-OneVision-7B)").
+ACC_MODELS = ("qwen2vl", "llava-onevision")
 
 # Per-point label nudges (dx in composite-eff units, dy in % accuracy), ha, va.
 LABEL_OFFSETS = {
@@ -92,8 +103,24 @@ def main():
     hw = {r["Design"]: r for r in csv.DictReader(open(CSV_PATH))}
     t2 = json.load(open(T2_PATH))
 
+    missing = [k for _, k, _, _, _ in FORMATS
+               if k is not None and not any(k in t2.get(m, {}) for m in ACC_MODELS)]
+    if missing:
+        raise KeyError(
+            "table2.json has no entry for format key(s) " + ", ".join(missing) +
+            ".\nKeys present: " +
+            ", ".join(sorted(set().union(*(t2.get(m, {}).keys() for m in ACC_MODELS)))) +
+            "\nFORMATS in this script must use the same directory keys as "
+            "accuracy/accuracy_result/generate_table2_json.py.")
+
     def acc(key):
-        vs = [t2[m][key]["avg"] for m in ("qwen2vl", "llava-onevision") if key in t2[m]]
+        """Mean `avg` over ACC_MODELS. `avg` is None unless a model has all six
+        benchmarks, so a partially-run table2.json is reported, not averaged."""
+        vs = [t2[m][key]["avg"] for m in ACC_MODELS
+              if key in t2.get(m, {}) and t2[m][key].get("avg") is not None]
+        if len(vs) < len(ACC_MODELS):
+            print(f"  warn {key}: only {len(vs)}/{len(ACC_MODELS)} model(s) have "
+                  f"a complete 6-benchmark average")
         return sum(vs) / len(vs) if vs else None
 
     fp16_acc = acc("fp16")

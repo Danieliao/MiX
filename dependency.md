@@ -48,15 +48,25 @@ quantization overhead:
 |------------|----------------|-------------|------------|
 | ≤ 7–8 B | LLaVA-OV-7B, Qwen2-VL-7B, MiniCPM-V-2.6, Qwen2.5-VL-3B/7B, Llama-3.1-8B, Mistral-7B-v0.3, Qwen2.5-7B | **NVIDIA RTX A6000 (48 GB)** | ≥ 128 GB |
 | 14 B | Qwen2.5-14B | **RTX A6000 (48 GB)** — measured peak ≈ 33.5 GB, fits comfortably | ≥ 128 GB |
-| 32 B | Qwen2.5-VL-32B | **NVIDIA A100 (80 GB)** | ≥ 256 GB |
+| 32 B | Qwen2.5-VL-32B | **NVIDIA B200 (180 GB)** — measured peak ≈ 83.5 GB (MMMU) and ≈ 107.5 GB (OCRBench); an 80 GB A100 is **not** sufficient | ≥ 256 GB |
 | 72 B | Qwen2.5-VL-72B | **NVIDIA B200 (180 GB)** — needed to hold the whole quantized model on one GPU | **≥ 500 GB** |
 
+- **Peak VRAM is driven by image resolution, not just model size.** The
+  Qwen2.5-VL processor is used with its shipped default `max_pixels`
+  (12,845,056 px → up to 16,384 visual tokens per image), and the blockwise
+  MiX/MX activation quantizers compute in FP32, so the transient quantizer
+  footprint scales with sequence length. At 32 B this is what pushes OCRBench
+  (14 of its 1,000 images hit the token cap) to ≈ 107.5 GB, well past the
+  63.6 GiB the FP16 weights occupy on their own. The FP16-only configs of
+  Table 7 need ≈ 76 GB and do fit in 80 GB; the three quantized configs do not.
 - **Single GPU only** — no multi-GPU/model-parallel path is used.
 - CPU cores are not a bottleneck; **4–8 cores** suffice. The binding constraints
   are **GPU VRAM** and, for the 72 B model, **≥ 500 GB system RAM** for the
   initial (FP32, CPU-side) quantization calculations.
 - Compatible 48 GB GPUs for the ≤14 B tier: A6000, A40, RTX 6000 Ada. The A100
-  (80 GB) / H100 / H200 / B200 also work and are required at 32 B / 72 B.
+  (80 GB) / H100 / H200 / B200 also work at that tier. At 32 B and 72 B a B200
+  (180 GB) is required; an 80 GB A100 or H100 runs out of memory on MMMU and
+  OCRBench.
 
 ### Part 2 — Hardware RTL (CPU EDA host)
 

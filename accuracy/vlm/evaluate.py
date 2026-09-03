@@ -335,6 +335,10 @@ class OCRBenchEvaluator:
         total = 0
         results = []
 
+        # Samples dropped by the OOM guard below. They never enter `total`,
+        # so without this counter an undersized GPU silently renormalizes the
+        # score over a subset instead of failing.
+        skipped_oom = 0
         pbar = tqdm(dataset, desc="OCRBench Eval")
         for idx, sample in enumerate(pbar):
             if max_samples and idx >= max_samples:
@@ -366,6 +370,7 @@ class OCRBenchEvaluator:
                     skip_special_tokens=True
                 )[0].strip()
             except torch.cuda.OutOfMemoryError:
+                skipped_oom += 1
                 self.logger.warning(f"OOM on sample {idx} (dataset={ds_name}), skipping")
                 gc.collect()
                 torch.cuda.empty_cache()
@@ -423,11 +428,17 @@ class OCRBenchEvaluator:
             t = category_total[qtype]
             self.logger.info(f"    {qtype}: {c}/{t} ({100*c/t:.1f}%)")
 
+        if skipped_oom:
+            self.logger.warning(
+                f"{skipped_oom} sample(s) skipped after CUDA OOM "
+                f"({total} of {skipped_oom + total} scored). This result is NOT "
+                f"comparable to the paper — rerun on a GPU with more memory.")
         return {
             "total_score": total_score,
             "total": total,
             "category_correct": category_correct,
             "category_total": category_total,
+            "skipped_oom": skipped_oom,
             "results": results,
         }
 
@@ -512,6 +523,10 @@ class MMMUEvaluator:
         total = 0
         results = []
 
+        # Samples dropped by the OOM guard below. They never enter `total`,
+        # so without this counter an undersized GPU silently renormalizes the
+        # score over a subset instead of failing.
+        skipped_oom = 0
         pbar = tqdm(dataset, desc="MMMU Eval")
         for idx, sample in enumerate(pbar):
             if max_samples and idx >= max_samples:
@@ -571,6 +586,7 @@ class MMMUEvaluator:
                     skip_special_tokens=True
                 )[0].strip()
             except torch.cuda.OutOfMemoryError:
+                skipped_oom += 1
                 self.logger.warning(f"OOM on sample {idx}, skipping")
                 gc.collect()
                 torch.cuda.empty_cache()
@@ -612,10 +628,16 @@ class MMMUEvaluator:
         accuracy = correct / total if total > 0 else 0
         self.logger.info(f"MMMU Results: Accuracy={accuracy:.4f} ({correct}/{total})")
 
+        if skipped_oom:
+            self.logger.warning(
+                f"{skipped_oom} sample(s) skipped after CUDA OOM "
+                f"({total} of {skipped_oom + total} scored). This result is NOT "
+                f"comparable to the paper — rerun on a GPU with more memory.")
         return {
             "accuracy": accuracy,
             "total": total,
             "correct": correct,
+            "skipped_oom": skipped_oom,
             "results": results,
         }
 
@@ -651,6 +673,10 @@ class SEEDEvaluator:
         total = 0
         results = []
 
+        # Samples dropped by the OOM guard below. They never enter `total`,
+        # so without this counter an undersized GPU silently renormalizes the
+        # score over a subset instead of failing.
+        skipped_oom = 0
         pbar = tqdm(dataset, desc="SEED Eval")
         for idx, sample in enumerate(pbar):
             if max_samples and idx >= max_samples:
@@ -688,6 +714,7 @@ class SEEDEvaluator:
                     skip_special_tokens=True
                 )[0].strip()
             except torch.cuda.OutOfMemoryError:
+                skipped_oom += 1
                 self.logger.warning(f"OOM on sample {idx}, skipping")
                 gc.collect()
                 torch.cuda.empty_cache()
@@ -723,10 +750,16 @@ class SEEDEvaluator:
         accuracy = correct / total if total > 0 else 0
         self.logger.info(f"SEED-Bench Results: Accuracy={accuracy:.4f} ({correct}/{total})")
 
+        if skipped_oom:
+            self.logger.warning(
+                f"{skipped_oom} sample(s) skipped after CUDA OOM "
+                f"({total} of {skipped_oom + total} scored). This result is NOT "
+                f"comparable to the paper — rerun on a GPU with more memory.")
         return {
             "accuracy": accuracy,
             "total": total,
             "correct": correct,
+            "skipped_oom": skipped_oom,
             "results": results,
         }
 
@@ -766,6 +799,10 @@ class ScienceQAEvaluator:
         results = []
         letters = ["A", "B", "C", "D", "E", "F", "G", "H"]
 
+        # Samples dropped by the OOM guard below. They never enter `total`,
+        # so without this counter an undersized GPU silently renormalizes the
+        # score over a subset instead of failing.
+        skipped_oom = 0
         pbar = tqdm(dataset, desc="ScienceQA Eval")
         for idx, sample in enumerate(pbar):
             if max_samples and idx >= max_samples:
@@ -798,6 +835,7 @@ class ScienceQAEvaluator:
                     skip_special_tokens=True
                 )[0].strip()
             except torch.cuda.OutOfMemoryError:
+                skipped_oom += 1
                 self.logger.warning(f"OOM on sample {idx}, skipping")
                 gc.collect()
                 torch.cuda.empty_cache()
@@ -833,10 +871,16 @@ class ScienceQAEvaluator:
         accuracy = correct / total if total > 0 else 0
         self.logger.info(f"ScienceQA Results: Accuracy={accuracy:.4f} ({correct}/{total})")
 
+        if skipped_oom:
+            self.logger.warning(
+                f"{skipped_oom} sample(s) skipped after CUDA OOM "
+                f"({total} of {skipped_oom + total} scored). This result is NOT "
+                f"comparable to the paper — rerun on a GPU with more memory.")
         return {
             "accuracy": accuracy,
             "total": total,
             "correct": correct,
+            "skipped_oom": skipped_oom,
             "results": results,
         }
 
@@ -872,6 +916,10 @@ class TextVQAEvaluator:
         total = 0
         results = []
 
+        # Samples dropped by the OOM guard below. They never enter `total`,
+        # so without this counter an undersized GPU silently renormalizes the
+        # score over a subset instead of failing.
+        skipped_oom = 0
         pbar = tqdm(dataset, desc="TextVQA Eval")
         for idx, sample in enumerate(pbar):
             if max_samples and idx >= max_samples:
@@ -898,6 +946,7 @@ class TextVQAEvaluator:
                     skip_special_tokens=True
                 )[0].strip()
             except torch.cuda.OutOfMemoryError:
+                skipped_oom += 1
                 self.logger.warning(f"OOM on sample {idx}, skipping")
                 gc.collect()
                 torch.cuda.empty_cache()
@@ -923,10 +972,16 @@ class TextVQAEvaluator:
         accuracy = total_score / total if total > 0 else 0
         self.logger.info(f"TextVQA Results: Accuracy={accuracy:.4f} (total_score={total_score:.1f}/{total})")
 
+        if skipped_oom:
+            self.logger.warning(
+                f"{skipped_oom} sample(s) skipped after CUDA OOM "
+                f"({total} of {skipped_oom + total} scored). This result is NOT "
+                f"comparable to the paper — rerun on a GPU with more memory.")
         return {
             "accuracy": accuracy,
             "total": total,
             "total_score": total_score,
+            "skipped_oom": skipped_oom,
             "results": results,
         }
 
@@ -963,6 +1018,10 @@ class VizWizEvaluator:
         total = 0
         results = []
 
+        # Samples dropped by the OOM guard below. They never enter `total`,
+        # so without this counter an undersized GPU silently renormalizes the
+        # score over a subset instead of failing.
+        skipped_oom = 0
         pbar = tqdm(dataset, desc="VizWiz Eval")
         for idx, sample in enumerate(pbar):
             if max_samples and idx >= max_samples:
@@ -989,6 +1048,7 @@ class VizWizEvaluator:
                     skip_special_tokens=True
                 )[0].strip()
             except torch.cuda.OutOfMemoryError:
+                skipped_oom += 1
                 self.logger.warning(f"OOM on sample {idx}, skipping")
                 gc.collect()
                 torch.cuda.empty_cache()
@@ -1014,10 +1074,16 @@ class VizWizEvaluator:
         accuracy = total_score / total if total > 0 else 0
         self.logger.info(f"VizWiz Results: Accuracy={accuracy:.4f} (total_score={total_score:.1f}/{total})")
 
+        if skipped_oom:
+            self.logger.warning(
+                f"{skipped_oom} sample(s) skipped after CUDA OOM "
+                f"({total} of {skipped_oom + total} scored). This result is NOT "
+                f"comparable to the paper — rerun on a GPU with more memory.")
         return {
             "accuracy": accuracy,
             "total": total,
             "total_score": total_score,
+            "skipped_oom": skipped_oom,
             "results": results,
         }
 
@@ -1074,6 +1140,10 @@ class ChartQAEvaluator:
         total = 0
         results = []
 
+        # Samples dropped by the OOM guard below. They never enter `total`,
+        # so without this counter an undersized GPU silently renormalizes the
+        # score over a subset instead of failing.
+        skipped_oom = 0
         pbar = tqdm(dataset, desc="ChartQA Eval")
         for idx, sample in enumerate(pbar):
             if max_samples and idx >= max_samples:
@@ -1102,6 +1172,7 @@ class ChartQAEvaluator:
                     skip_special_tokens=True
                 )[0].strip()
             except torch.cuda.OutOfMemoryError:
+                skipped_oom += 1
                 self.logger.warning(f"OOM on sample {idx}, skipping")
                 gc.collect()
                 torch.cuda.empty_cache()
@@ -1127,10 +1198,16 @@ class ChartQAEvaluator:
         accuracy = total_score / total if total > 0 else 0
         self.logger.info(f"ChartQA Results: Accuracy={accuracy:.4f} (total_score={total_score:.1f}/{total})")
 
+        if skipped_oom:
+            self.logger.warning(
+                f"{skipped_oom} sample(s) skipped after CUDA OOM "
+                f"({total} of {skipped_oom + total} scored). This result is NOT "
+                f"comparable to the paper — rerun on a GPU with more memory.")
         return {
             "accuracy": accuracy,
             "total": total,
             "total_score": total_score,
+            "skipped_oom": skipped_oom,
             "results": results,
         }
 
@@ -1192,6 +1269,10 @@ class SEEDBench2PlusEvaluator:
         total = 0
         results = []
 
+        # Samples dropped by the OOM guard below. They never enter `total`,
+        # so without this counter an undersized GPU silently renormalizes the
+        # score over a subset instead of failing.
+        skipped_oom = 0
         pbar = tqdm(annotations, desc="SEEDBench2Plus Eval")
         for idx, sample in enumerate(pbar):
             if max_samples and idx >= max_samples:
@@ -1228,6 +1309,7 @@ class SEEDBench2PlusEvaluator:
                     skip_special_tokens=True
                 )[0].strip()
             except torch.cuda.OutOfMemoryError:
+                skipped_oom += 1
                 self.logger.warning(f"OOM on sample {idx}, skipping")
                 gc.collect()
                 torch.cuda.empty_cache()
@@ -1263,10 +1345,16 @@ class SEEDBench2PlusEvaluator:
         accuracy = correct / total if total > 0 else 0
         self.logger.info(f"SEED-Bench-2-Plus Results: Accuracy={accuracy:.4f} ({correct}/{total})")
 
+        if skipped_oom:
+            self.logger.warning(
+                f"{skipped_oom} sample(s) skipped after CUDA OOM "
+                f"({total} of {skipped_oom + total} scored). This result is NOT "
+                f"comparable to the paper — rerun on a GPU with more memory.")
         return {
             "accuracy": accuracy,
             "total": total,
             "correct": correct,
+            "skipped_oom": skipped_oom,
             "results": results,
         }
 
