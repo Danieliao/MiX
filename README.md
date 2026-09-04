@@ -18,8 +18,7 @@ pip install -r requirements.txt
 ```
 
 The accuracy pipeline needs a GPU with ≥48 GB VRAM for the 7B/8B models and
-Qwen2.5-14B (measured peak ≈ 33.5 GB), and a B200 (180 GB) for Qwen2.5-VL-32B/72B
-— at 32B the peak reaches ≈ 107.5 GB on OCRBench, so an 80 GB A100 is not enough.
+Qwen2.5-14B (measured peak ≈ 33.5 GB), and a B200 (180 GB) for Qwen2.5-VL-32B/72B.
 See [`dependency.md`](dependency.md) for the per-model breakdown. The hardware
 model runs on CPU.
 
