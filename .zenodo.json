@@ -1,6 +1,6 @@
 {
   "upload_type": "software",
-  "title": "MiX: Micro-Inverted-Scaling for End-to-End Low-Bit Vision-Language Model Acceleration -- Artifact",
+  "title": "MiX-MICRO26-AE",
   "description": "<p>Artifact for the MICRO 2026 paper <em>MiX: Micro-Inverted-Scaling for End-to-End Low-Bit Vision-Language Model Acceleration</em>. A single repository with three self-contained parts:</p><ul><li><strong>accuracy/</strong> &mdash; the MiX / MX / NVFP4 quantization code, per-benchmark YAML configs, and evaluation scripts reproducing the VLM and LLM accuracy tables (LLaVA-OneVision-7B, Qwen2-VL-7B, MiniCPM-V-2.6, Qwen2.5-VL 3B&ndash;72B; Llama-3.1-8B, Mistral-7B-v0.3, Qwen2.5-7B/14B).</li><li><strong>hardware_rtl/</strong> &mdash; SystemVerilog RTL, self-checking testbenches, and Synopsys Design Compiler / SAIF-power scripts for 15 systolic-array datapaths plus the MiX/MX quantizer and K-smoother, reproducing the 28&nbsp;nm area and power results.</li><li><strong>hardware_model/</strong> &mdash; a standalone analytical energy/area simulator (NumPy + Matplotlib only) reproducing the iso-area speedup/energy and PE-efficiency Pareto figures.</li></ul><p>Parts 1 and 3 use open-source Python; Part 2 requires Synopsys Design Compiler and VCS with a TSMC 28&nbsp;nm standard-cell library. Model weights and datasets are pulled from HuggingFace on first run; no accuracy results are shipped.</p>",
   "creators": [
     {
