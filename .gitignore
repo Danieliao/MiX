@@ -32,3 +32,6 @@ paper/
 
 # AE submission-form text (kept local, pasted into the web form)
 abstract.md
+
+# arXiv version of the paper (tracked in its own upstream repo, MiX_Arxiv)
+arxiv_paper/

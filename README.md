@@ -1,7 +1,13 @@
 # MiX: Micro-Inverted-Scaling — Artifact Evaluation
 
-This repository reproduces the results of the MICRO 2026 paper
-*Micro-Inverted-Scaling (MiX)*. It is organized into three self-contained parts:
+This repository reproduces the results of the paper:
+
+> **MiX: Micro-Inverted-Scaling for End-to-End Low-Bit Vision-Language Model Acceleration**  
+> Yuan Liao, Jae-sun Seo (Cornell Tech, Cornell University)  
+> Accepted to the *59th IEEE/ACM International Symposium on Microarchitecture (MICRO 2026)*  
+> arXiv: [https://arxiv.org/abs/2609.19683](https://arxiv.org/abs/2609.19683)
+
+It is organized into three self-contained parts:
 
 | Dir | Reproduces | What it is |
 |-----|-----------|------------|
